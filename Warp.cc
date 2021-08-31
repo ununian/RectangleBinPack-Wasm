@@ -5,7 +5,7 @@
 */
 #include <utility>
 
-// #include "GuillotineBinPack.h"
+#include "GuillotineBinPack.cpp"
 #include "MaxRectsBinPack.cpp"
 #include "Rect.cpp"
 // #include "ShelfBinPack.h"
@@ -37,6 +37,38 @@ EMSCRIPTEN_BINDINGS(c)
 			.property("height", &Rect::height);
 
 	emscripten::function("IsContainedIn", &IsContainedIn);
+
+	// GuillotineBinPack.cpp
+	enum_<GuillotineBinPack::FreeRectChoiceHeuristic>("GuillotineBinPack_FreeRectChoiceHeuristic")
+			.value("RectBestAreaFit", GuillotineBinPack::FreeRectChoiceHeuristic::RectBestAreaFit)
+			.value("RectBestLongSideFit", GuillotineBinPack::FreeRectChoiceHeuristic::RectBestLongSideFit)
+			.value("RectBestShortSideFit", GuillotineBinPack::FreeRectChoiceHeuristic::RectBestShortSideFit)
+			.value("RectWorstAreaFit", GuillotineBinPack::FreeRectChoiceHeuristic::RectWorstAreaFit)
+			.value("RectWorstLongSideFit", GuillotineBinPack::FreeRectChoiceHeuristic::RectWorstLongSideFit)
+			.value("RectWorstShortSideFit", GuillotineBinPack::FreeRectChoiceHeuristic::RectWorstShortSideFit);
+
+	enum_<GuillotineBinPack::GuillotineSplitHeuristic>("GuillotineBinPack_GuillotineSplitHeuristic")
+			.value("SplitShorterLeftoverAxis", GuillotineBinPack::GuillotineSplitHeuristic::SplitShorterLeftoverAxis)
+			.value("SplitLongerLeftoverAxis", GuillotineBinPack::GuillotineSplitHeuristic::SplitLongerLeftoverAxis)
+			.value("SplitMinimizeArea", GuillotineBinPack::GuillotineSplitHeuristic::SplitMinimizeArea)
+			.value("SplitMaximizeArea", GuillotineBinPack::GuillotineSplitHeuristic::SplitMaximizeArea)
+			.value("SplitShorterAxis", GuillotineBinPack::GuillotineSplitHeuristic::SplitShorterAxis)
+			.value("SplitLongerAxis", GuillotineBinPack::GuillotineSplitHeuristic::SplitLongerAxis);
+
+	class_<GuillotineBinPack>("GuillotineBinPack")
+			.constructor<>()
+			.constructor<int, int>()
+			.function("Init", &GuillotineBinPack::Init)
+			.function("Insert_Single",
+								select_overload<Rect(int, int, bool, GuillotineBinPack::FreeRectChoiceHeuristic, GuillotineBinPack::GuillotineSplitHeuristic)>(
+										&GuillotineBinPack::Insert))
+			.function("Insert_Range",
+								select_overload<void(vector<RectSize> &, bool, GuillotineBinPack::FreeRectChoiceHeuristic, GuillotineBinPack::GuillotineSplitHeuristic)>(
+										&GuillotineBinPack::Insert))
+			.function("Occupancy", &GuillotineBinPack::Occupancy)
+			.function("GetFreeRectangles", &GuillotineBinPack::GetFreeRectangles)
+			.function("GetUsedRectangles", &GuillotineBinPack::GetUsedRectangles)
+			.function("MergeFreeList", &GuillotineBinPack::MergeFreeList);
 
 	// MaxRectsBinPack.cpp
 	enum_<MaxRectsBinPack::FreeRectChoiceHeuristic>("MaxRectsBinPack_FreeRectChoiceHeuristic")

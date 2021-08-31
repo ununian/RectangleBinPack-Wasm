@@ -2,14 +2,19 @@
 # yarn lockfile v1
 
 
+"@types/emscripten@^1.39.5":
+  version "1.39.5"
+  resolved "https://registry.yarnpkg.com/@types/emscripten/-/emscripten-1.39.5.tgz#eb0fb1048301df980b6f8a5ec3d63f7d1572bb73"
+  integrity sha512-DIOOg+POSrYl+OlNRHQuIEqCd8DCtynG57H862UCce16nXJX7J8eWxNGgOcf8Eyge8zXeSs27mz1UcFu8L/L7g==
+
 commander@^7.2.0:
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
   integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
 
-tsembind@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/tsembind/-/tsembind-1.0.1.tgz#8f0a2c200706b43d664c514ad36e6cc157ae7125"
-  integrity sha512-BHvqses4w+fn9C2D1MupMyjDZv8QOxaUZzNUq4i9+e3/Po20sp//5/ZoyqjSYDszl1QLeH/hXMDJ7dd9a/gLzA==
+tsembind@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/tsembind/-/tsembind-1.0.2.tgz#cda1cebd2eb73655b0735161b23ec35b7dd89345"
+  integrity sha512-Ps22Rh7Kz4PsFN1u27ozHblVb1SY2qP4FSgaInJdSD0OT8gJSxerJZ6EapIy233pIpN1HJBz0w8nVtSrm6nwhw==
   dependencies:
     commander "^7.2.0"

@@ -15,10 +15,16 @@
   <script src="/Warp.js"></script>
   <script>
     Module.addOnPostRun(() => {
-      const pack = new Module.MaxRectsBinPack(1000, 1000, true);
+      const pack = new Module.GuillotineBinPack(1000, 1000);
       const rectSizes = new Module.VectorRectSize();
-      const rects = new Module.VectorRect();
       rectSizes.push_back(new Module.RectSize(100, 100));
+      rectSizes.push_back(new Module.RectSize(200, 100));
+      rectSizes.push_back(new Module.RectSize(200, 100));
+      rectSizes.push_back(new Module.RectSize(200, 100));
+      rectSizes.push_back(new Module.RectSize(200, 100));
+      rectSizes.push_back(new Module.RectSize(200, 100));
+      rectSizes.push_back(new Module.RectSize(200, 100));
+      rectSizes.push_back(new Module.RectSize(200, 100));
       rectSizes.push_back(new Module.RectSize(200, 100));
       rectSizes.push_back(new Module.RectSize(100, 200));
       rectSizes.push_back(new Module.RectSize(100, 300));
@@ -30,9 +36,20 @@
       rectSizes.push_back(new Module.RectSize(200, 100));
       rectSizes.push_back(new Module.RectSize(200, 100));
       rectSizes.push_back(new Module.RectSize(100, 300));
-      pack.Insert_Range(rectSizes, rects, Module.MaxRectsBinPack_FreeRectChoiceHeuristic.RectBestShortSideFit);
-      for (let i = 0; i < rects.size(); i++) {
-        const r = rects.get(i);
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      rectSizes.push_back(new Module.RectSize(100, 300));
+      pack.Insert_Range(rectSizes, true, Module.GuillotineBinPack_FreeRectChoiceHeuristic.RectBestAreaFit, Module.GuillotineBinPack_GuillotineSplitHeuristic.SplitShorterLeftoverAxis);
+      const a = pack.GetUsedRectangles();
+      for (let i = 0; i < a.size(); i++) {
+        const r = a.get(i);
         console.log(`${r.x} ${r.y} ${r.width} ${r.height}`)
       }
       console.log(`Occupancy:${pack.Occupancy() * 100}%`)
