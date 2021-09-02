@@ -7,9 +7,9 @@
 
 #include "GuillotineBinPack.cpp"
 #include "MaxRectsBinPack.cpp"
+#include "SkylineBinPack.cpp"
+#include "ShelfBinPack.cpp"
 #include "Rect.cpp"
-// #include "ShelfBinPack.h"
-// #include "SkylineBinPack.h"
 #include "emscripten/bind.h"
 
 using namespace emscripten;
@@ -89,4 +89,40 @@ EMSCRIPTEN_BINDINGS(c)
 								select_overload<Rect(int, int, MaxRectsBinPack::FreeRectChoiceHeuristic)>(
 										&MaxRectsBinPack::Insert))
 			.function("Occupancy", &MaxRectsBinPack::Occupancy);
+
+	// SkylineBinPack.cpp
+	enum_<SkylineBinPack::LevelChoiceHeuristic>("SkylineBinPack_LevelChoiceHeuristic")
+			.value("LevelBottomLeft", SkylineBinPack::LevelChoiceHeuristic::LevelBottomLeft)
+			.value("LevelMinWasteFit", SkylineBinPack::LevelChoiceHeuristic::LevelMinWasteFit);
+
+	class_<SkylineBinPack>("SkylineBinPack")
+			.constructor<>()
+			.constructor<int, int, bool>()
+			.function("Init", &SkylineBinPack::Init)
+			.function("Insert_Range",
+								select_overload<void(vector<RectSize> &, vector<Rect> &, SkylineBinPack::LevelChoiceHeuristic)>(
+										&SkylineBinPack::Insert))
+			.function("Insert_Single",
+								select_overload<Rect(int, int, SkylineBinPack::LevelChoiceHeuristic)>(
+										&SkylineBinPack::Insert))
+			.function("Occupancy", &SkylineBinPack::Occupancy);
+
+	// ShelfBinPack.cpp
+	enum_<ShelfBinPack::ShelfChoiceHeuristic>("ShelfBinPack_ShelfChoiceHeuristic")
+			.value("ShelfNextFit", ShelfBinPack::ShelfChoiceHeuristic::ShelfNextFit)
+			.value("ShelfFirstFit", ShelfBinPack::ShelfChoiceHeuristic::ShelfFirstFit)
+			.value("ShelfBestAreaFit", ShelfBinPack::ShelfChoiceHeuristic::ShelfBestAreaFit)
+			.value("ShelfWorstAreaFit", ShelfBinPack::ShelfChoiceHeuristic::ShelfWorstAreaFit)
+			.value("ShelfBestHeightFit", ShelfBinPack::ShelfChoiceHeuristic::ShelfBestHeightFit)
+			.value("ShelfBestWidthFit", ShelfBinPack::ShelfChoiceHeuristic::ShelfBestWidthFit)
+			.value("ShelfWorstWidthFit", ShelfBinPack::ShelfChoiceHeuristic::ShelfWorstWidthFit);
+
+	class_<ShelfBinPack>("ShelfBinPack")
+			.constructor<>()
+			.constructor<int, int, bool>()
+			.function("Init", &ShelfBinPack::Init)
+			.function("Insert_Single",
+								select_overload<Rect(int, int, ShelfBinPack::ShelfChoiceHeuristic)>(
+										&ShelfBinPack::Insert))
+			.function("Occupancy", &ShelfBinPack::Occupancy);
 }
