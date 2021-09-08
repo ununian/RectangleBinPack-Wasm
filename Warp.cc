@@ -1,10 +1,3 @@
-/** @file Rect.cpp
-	@author Jukka Jyl�nki
-
-	This work is released to Public Domain, do whatever you want with it.
-*/
-#include <utility>
-
 #include "GuillotineBinPack.cpp"
 #include "MaxRectsBinPack.cpp"
 #include "SkylineBinPack.cpp"
