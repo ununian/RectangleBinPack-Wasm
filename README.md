@@ -62,10 +62,10 @@ using namespace rbp;			// 这个算法库的命名空间 RectangleBinPack
 
 EMSCRIPTEN_BINDINGS(c)			// 表示我们开始编写 Emscripten 的 Binding
 {
-    // 下面只要是字符串里面的值都是在 wasm 里面的名字，可以自己取，不强求和 C++ 中的一样。
+    	// 下面只要是字符串里面的值都是在 wasm 里面的名字，可以自己取，不强求和 C++ 中的一样。
     
 	// 导出 Rect 和 RectSize 的 vector
-    register_vector<Rect>("VectorRect");
+    	register_vector<Rect>("VectorRect");
 	register_vector<RectSize>("VectorRectSize");
 
 	// Rect.cpp
@@ -76,13 +76,13 @@ EMSCRIPTEN_BINDINGS(c)			// 表示我们开始编写 Emscripten 的 Binding
 			.property("height", &RectSize::height);
 
     
-     // ...
+    	 // ...
 
 	emscripten::function("IsContainedIn", &IsContainedIn);	// 导出了一个全局的函数
 
 	// SkylineBinPack.cpp
-    // 导出一个叫做 SkylineBinPack_LevelChoiceHeuristic 的枚举，
-    // 他有 2 个值 LevelBottomLeft、LevelMinWasteFit
+    	// 导出一个叫做 SkylineBinPack_LevelChoiceHeuristic 的枚举，
+    	// 他有 2 个值 LevelBottomLeft、LevelMinWasteFit
 	enum_<SkylineBinPack::LevelChoiceHeuristic>("SkylineBinPack_LevelChoiceHeuristic")
 			.value("LevelBottomLeft", SkylineBinPack::LevelChoiceHeuristic::LevelBottomLeft)
 			.value("LevelMinWasteFit", SkylineBinPack::LevelChoiceHeuristic::LevelMinWasteFit);
@@ -91,7 +91,7 @@ EMSCRIPTEN_BINDINGS(c)			// 表示我们开始编写 Emscripten 的 Binding
 			.constructor<>()
 			.constructor<int, int, bool>()
 			.function("Init", &SkylineBinPack::Init) // 一个实例函数 Init
-       		 // 一个实例函数 Insert_Range，他对应的是 Insert 函数的某个重载
+       		 	// 一个实例函数 Insert_Range，他对应的是 Insert 函数的某个重载
 			.function("Insert_Range",select_overload<void(vector<RectSize> &, vector<Rect> &, SkylineBinPack::LevelChoiceHeuristic)>(&SkylineBinPack::Insert)) 
 			.function("Insert_Single",select_overload<Rect(int, int, SkylineBinPack::LevelChoiceHeuristic)>(&SkylineBinPack::Insert))
 			.function("Occupancy", &SkylineBinPack::Occupancy);
@@ -173,8 +173,13 @@ export default factory;
 
 ```tsx
 import type { RectangleBinPackModule as PackModule } from 'rectanglebinpack-wasm'
-import PackWasmInit from 'rectanglebinpack-wasm';	// PackWasmInit 就是上面那个工厂函数
-import PackWasm from 'rectanglebinpack-wasm/dist/Warp.wasm?url' // 我们需要获取 wasm 文件的路径。我们不需要用打包器的 wasm loader，只需要这个wasm文件的 url 就行。这里是 vite 的写法，webpack 应该是 file-loader
+
+// PackWasmInit 就是上面那个工厂函数
+import PackWasmInit from 'rectanglebinpack-wasm';
+
+// 我们需要获取 wasm 文件的路径。我们不需要用打包器的 wasm loader，
+// 只需要这个wasm文件的 url 就行。这里是 vite 的写法，webpack 应该是 file-loader
+import PackWasm from 'rectanglebinpack-wasm/dist/Warp.wasm?url' 
 
 // 方便获取枚举的值，主要是用来规避 ts 的类型检查
 const toEnumValue = (enumObj: any, value: any) => enumObj[value]
@@ -185,7 +190,8 @@ export class WasmPackService implements IPackService {
 
   constructor() {
     PackWasmInit({ 
-        locateFile: (url) => url.endsWith('.wasm') ? PackWasm : url  // 这里非常重要，我们需要告诉工厂方法 wasm 文件的位置在哪，如果不写的话，他会去网页的根目录下查找，一般情况下我们不希望这样
+    	// 这里非常重要，我们需要告诉工厂方法 wasm 文件的位置在哪，如果不写的话，他会去网页的根目录下查找，一般情况下我们不希望这样
+        locateFile: (url) => url.endsWith('.wasm') ? PackWasm : url  
     }).then(wasm => {
       this.wasm = wasm;	// 初始化完成后，就能获取到 wasm 模块的对象了
     })
