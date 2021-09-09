@@ -166,7 +166,8 @@ export default factory;
 
 详细的请参考 Demo 仓库中的代码，效果如下：
 
-![10](C:\Users\ununi\Desktop\10.gif)
+![10](https://user-images.githubusercontent.com/4506072/132728723-94fad3cf-4dfc-418d-82ea-b875a16cf7e6.gif)
+
 
 下面说一些要注意的地方
 
