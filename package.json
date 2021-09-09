@@ -1,6 +1,6 @@
 {
   "name": "rectanglebinpack-wasm",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "",
   "main": "dist/Warp.js",
   "types": "dist/Warp.d.ts",
