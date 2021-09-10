@@ -8,24 +8,28 @@
 
 ## 1. 起因
 
-​	事情的起因是因为小学妹的一个小课题，要写一个矩形排样（二维矩形装箱）的程序。具体来说就是需要在规定大小的大矩形中排列若干个大小不一的小矩形，求如何排列小矩形使得空间利用率最高。（具体来说就给定一系列矩形，需要将这些矩形打包到一个给定大小的二维箱子中，且任何两个矩形不能相交和包含，求如何排列矩形使得需要的箱子最少，且利用率最大）这是一个很有现实意义的问题，在工业中非常重要，而且排样的结果往往和经济利益相挂钩。另外这是一个NP-Hard问题，没有一个简单的公式可以计算。
+  事情的起因是因为小学妹的一个小课题，要写一个矩形排样（二维矩形装箱）的程序。具体来说就给定一系列矩形，需要将这些矩形打包到一个给定大小的二维箱子中，且任何两个矩形不能相交和包含，求如何排列矩形使得需要的箱子最少，且利用率最大。这是一个很有现实意义的问题，在工业中非常重要，而且排样的结果往往和经济利益相挂钩。另外这是一个`NP-Hard`问题，没有一个简单的公式可以计算，如果要把所有情况枚举出来，就算超级计算机都算不过来。
 
 ## 2. 思路	
 
-​	鉴于小学妹是不学无术的代表，而我对算法可以说是一窍不通，那么找现成的算法是唯一的办法。经过各种曲折，终于找到了一个叫 RectangleBinPack 的库，而且很贴心的是这个库里面还有一篇介绍二维矩形装箱各种算法的文章，这个库就是这篇文章中各种算法的实现，如果对算法有兴趣的话可以看 Wasm 仓库里面的 pdf，我把英文版和中文机翻版本都放在里面了。
+鉴于小学妹是不学无术的代表，而我对算法可以说是一窍不通，那么找现成的算法是唯一的办法。经过各种曲折，终于找到了一个叫 `RectangleBinPack` 的库，而且很贴心的是这个库里面还有一篇介绍二维矩形装箱各种算法的文章，这个库就是这篇文章中各种算法的实现，如果对算法有兴趣的话可以看 Wasm 仓库里面的 pdf，我把英文版和中文机翻版本都放在里面了。现在我们需要了解的是，一共有 4 种算法分别是：`货架算法`、`断头台算法`、`最大矩形算法`、`天际线算法`，每个算法都有一些策略选项。
 
-​	现在我们需要了解的是，一共有 4 种算法分别是：货架算法、断头台算法、最大矩形算法、天际线算法。每个算法都有一些策略选项。然后这次毕竟这里只是一个小的课题研究，我们就简化一下问题，只考虑一个箱子的情况。
+这次毕竟这里只是一个小的课题研究，我们就简化一下问题，**只考虑一个箱子的情况**。
 
 ## 3.方案
 
-​	因为该库是 C++ 写的，我对 C++ 并不是很熟悉，早就还给老师了，所以需要用我熟悉的语言来使用。在其他语言中使用 C++ 有两种方案：
+  因为该库是 C++ 写的，我对 C++ 并不是很熟悉，早就还给老师了，所以需要用我熟悉的语言来使用。在其他语言中使用 C++ 有两种方案：
 
 > * 一种是直接改写成对应的语言，这种适用于比较简单的库。其实这个库很适合直接改写，但是那就太没意思了，不能在小学妹前体现我的水平。
-> * 第二种是通过将 C++ 库编译成静态库，然后通过跨语言调用机制去直接调用这个静态库。本文将使用这种方式。
+> * 第二种是通过将 C++ 库编译成静态库，然后通过跨语言调用机制去直接调用这个静态库。这种看着就很高端，我已经能感受到小学妹崇拜的眼光了。本文将使用这种方式。
 
-​	首先我想到的是 C#，毕竟在 C# 中调用 C++ 是很常见的操作，也有毕竟成熟的 Warp 工具如 Swig，我之前也这样做过。但是使用 C# 会有几个问题，第一是使用起来比较麻烦，毕竟是桌面程序，就有分发、安装、兼容性等问题要处理。第二是编译的结果不跨平台，虽然 C++ 和 C# 本身都能跨平台，但是要针对每个平台都编译一次，而且 C# 的 GUI 部分要跨平台的话写起来会比较麻烦。
+  
+  首先我想到的是 C#，毕竟在 C# 中调用 C++ 是很常见的操作，也有毕竟成熟的 Binding 工具如 Swig，我之前也这样做过。但是使用 C# 会有两个问题:
+  
+> * 第一是使用起来比较麻烦，毕竟是桌面程序，就有分发、安装、兼容性等问题要处理。
+> * 第二是编译的结果不跨平台，虽然 C++ 和 C# 本身都能跨平台，但是要针对每个平台都编译一次，而且 C# 的 GUI 部分要跨平台的话写起来会比较麻烦。
 
-​	然后我就想到了 WebAssembly，基本上完美的解决了上面的问题。不用担心跨平台的问题，又能直接使用前端的技术来写 GUI 部分，很方便。然后主要是看起来很高端，能在小学妹面前装逼，那当然就选这个了！
+  然后我就想到了 WebAssembly，基本上完美的解决了上面的问题。不用担心跨平台的问题，又能直接使用前端的技术来写 GUI 部分，很方便。然后主要是看起来很高端，能在小学妹面前装逼，那当然就选这个了！
 
 ## 4. 实现
 
@@ -41,15 +45,15 @@
 ```shell
 .
 ├── XXXX.cpp 		// 算法本身的 cpp 文件
-├── XXXX.h			// 算法本身的头文件
-├── Warp.cc			// Warp文件，其中描述了需要导出的类和函数、枚举等
+├── XXXX.h		// 算法本身的头文件
+├── Warp.cc		// Warp文件，其中描述了需要导出的类和函数、枚举等
 ├── compile.sh		// 编译脚本
 ├── package.json	// package.json 文件，方便发布到 npm 仓库		
 ```
 
 ### 4.3  Wrap 文件的编写
 
-​	在 Warp 文件中我们需要显示的告诉 Emscripten 我们需要导出那些类和函数（称之为 Binding），方便 Emscripten 生成相应的代码。让我们来看看本项目的 Warp 是什么样子的
+  在 Warp 文件中我们需要显示的告诉 Emscripten 我们需要导出那些类和函数（称之为 Binding），让 Emscripten 生成相应的 wasm 代码和 warp 代码，以便我们在 web 环境中使用。让我们来看看本项目的 Warp 是什么样子的
 
 ```c++
 #include "Rect.cpp"
@@ -69,9 +73,9 @@ EMSCRIPTEN_BINDINGS(c)			// 表示我们开始编写 Emscripten 的 Binding
 	register_vector<RectSize>("VectorRectSize");
 
 	// Rect.cpp
-	class_<RectSize>("RectSize")	// 导出 RectSize 类，他包括
-			.constructor<>()		// 一个没有参数的构造函数
-			.constructor<int, int>()	// 一个有 2 个参数的构造函数，参数的类型分别是 int 和 int
+	class_<RectSize>("RectSize")				// 导出 RectSize 类，他包括
+			.constructor<>()			// 一个没有参数的构造函数
+			.constructor<int, int>()		// 一个有 2 个参数的构造函数，参数的类型分别是 int 和 int
 			.property("width", &RectSize::width)	// 一个实例字段 width，对应的地址是 RectSize 的 width
 			.property("height", &RectSize::height);
 
@@ -98,25 +102,25 @@ EMSCRIPTEN_BINDINGS(c)			// 表示我们开始编写 Emscripten 的 Binding
 }
 ```
 
-​	Warp 文件本身和文件中是字符串里面的值都是在 wasm 里面的名字，可以自己取，不强求和 C++ 中的一样。
+  Warp 文件的文件名和文件中是字符串里面的值都是在 wasm 里面的名字，可以自己取，不强求和 C++ 中的一样。
 
-​	记住直接引入 cpp 文件，不是头文件。下面来说说几个重要的部分
+  记住直接引入 cpp 文件，不是头文件。下面来说说几个重要的部分
 
 #### 4.3.1 vector 的处理
 
-​	vector 是 C++ 标准库中提供的一个数据结构，是一个可以动态改变长度的数组。本项目中主要用来传递需要排版的 RectSize 数组 以及接收计算结果 Rect 数组。因为 vector 是很常用的数据结构，所以 Emscripten 很贴心的帮我们提供了自动绑定的方法 register_vector ，只需要传入 vector 的元素类型和导出的名字就好了。
+  vector 是 C++ 标准库中提供的一个数据结构，是一个可以动态改变长度的数组。本项目中主要用来传递需要排版的 RectSize 数组以及接收计算结果的 Rect 数组。因为 vector 是很常用的数据结构，所以 Emscripten 很贴心的帮我们提供了自动绑定的方法 register_vector ，只需要传入 vector 的元素类型和导出的名字就好了。
 
 #### 4.3.2 枚举的处理
 
-​	JS 中没有枚举的概念，所以在 JS 使用的时候是用 Object 的形式。绑定也很简单，使用 enum_ 指定名称和类型，以及对应的值就行。
+  JS 中没有枚举的概念，所以在 JS 使用的时候是用 Object 的形式。绑定也很简单，使用 enum_ 指定名称和类型，以及对应的值就行。
 
 #### 4.3.3 函数重载的处理
 
-​	因为 JS 中没有函数重载的概念，所以导出重载函数需要指定不同的名称，并使用 select_overload 函数找到对应的函数（ 指定函数的返回值、参数的类型就行，没有返回值就是 void ）。顺带一提如果有多个构造函数也需要指定构造函数的参数类型（ 构造函数不能指定名称和返回值 ）。
+  因为 JS 中没有函数重载的概念，所以导出重载函数需要指定不同的名称，并使用 select_overload 函数找到对应的函数（ 指定函数的返回值、参数的类型就行，没有返回值就是 void ）。顺带一提如果有多个构造函数也需要指定构造函数的参数类型（ 构造函数不能指定名称和返回值 ）。
 
 ### 4.4 编译 Wasm
 
-​	接下来我们需要把写好的 Warp 文件编译成 Wasm，编译脚本如下
+  接下来我们需要把写好的 Warp 文件编译成 Wasm，编译脚本如下
 
 ```shell
 emcc --bind -Oz Warp.cc -o dist/Warp.js \
@@ -126,9 +130,9 @@ emcc --bind -Oz Warp.cc -o dist/Warp.js \
 
 > --bind 表示需要使用 Embind 的绑定功能。
 >
-> -Oz 表示优化等级，有O0、O1、O2 等等，Oz表示优化等级最高，因为我们不需要调试这个Wasm，所以选 Oz就行。
+> -Oz 表示优化等级，有O0、O1、O2 等等，Oz表示优化等级最高，因为我们不需要调试这个Wasm，所以选 Oz 就行。
 >
-> -o 指定输出文件，这里需要注意的是，如果指定的文件后缀名是 js，那么就会生成 wasm 和 响应的 js warp 文件，这个 js warp 文件主要用于是方便我们使用这个库。也可以指定 html 生成一个 demo 网页，指定 wasm 只生成 wasm 文件。
+> -o 指定输出文件，这里需要注意的是，如果指定的文件后缀名是 js，那么就会生成 wasm 和相应的 js warp 文件，这个 js warp 文件主要用于是方便我们使用 wasm，里面包含一些胶水代码。也可以指定 html 生成一个 demo 网页，指定 wasm 只生成 wasm 文件。
 >
 > -s WASM=1 表示编译到 wasm ，如果是 0 就会编译到 asm.js，2 就同时编译成两者。
 >
@@ -140,11 +144,11 @@ emcc --bind -Oz Warp.cc -o dist/Warp.js \
 
 > 工具地址：[ted537/tsembind: Generate typescript bindings for Embind projects (github.com)](https://github.com/ted537/tsembind)
 
-​	为了方便在工程中使用，生成 TypeScript 的描述文件是很重要的一步，不然别人用的时候根本不知道怎么用（ 还能减少写文档的工作量 ）。
+  为了方便在工程中使用，生成 TypeScript 的描述文件是很重要的一步，不然别人用的时候根本不知道怎么用（ 还能减少写文档的工作量 ）。
 
-​	不过当前并没有很完善的方案处理这个问题，我选的这个工具是读取 wasm 文件分析里面的导出，所以不能知道函数的形参名字，然后生成的描述文件还有一点点我们需要改动的地方。
+  不过当前并没有很完善的方案处理这个问题，我选的这个工具是读取 wasm 文件分析里面的导出，所以不能知道函数的形参名字，然后生成的描述文件还有一点点我们需要改动的地方。
 
-​	直接运行 ```tsembind ./dist/Warp.js > ./dist/Warp.d.ts``` 就行了，然后修改一下最下面导出的部分，记得添加 `@types/emscripten`
+  直接运行 ```tsembind ./dist/Warp.js > ./dist/Warp.d.ts``` 就行了，然后修改一下最下面导出的部分，记得添加 `@types/emscripten`
 
 ```tsx
 export interface CustomEmbindModule { 
@@ -164,12 +168,12 @@ export default factory;
 
 ### 4.6 使用 Wasm
 
-详细的请参考 Demo 仓库中的代码，效果如下：
+效果如下：
 
 ![10](https://user-images.githubusercontent.com/4506072/132728723-94fad3cf-4dfc-418d-82ea-b875a16cf7e6.gif)
 
 
-下面说一些要注意的地方
+详细的使用方法请参考 Demo 仓库中的代码，下面说一些要注意的地方
 
 ```tsx
 import type { RectangleBinPackModule as PackModule } from 'rectanglebinpack-wasm'
@@ -190,10 +194,11 @@ export class WasmPackService implements IPackService {
 
   constructor() {
     PackWasmInit({ 
-    	// 这里非常重要，我们需要告诉工厂方法 wasm 文件的位置在哪，如果不写的话，他会去网页的根目录下查找，一般情况下我们不希望这样
+    	// 这里非常重要，我们需要告诉工厂方法 wasm 文件的位置在哪，
+	// 如果不写的话，他会去网页的根目录下查找，一般情况下我们不希望这样
         locateFile: (url) => url.endsWith('.wasm') ? PackWasm : url  
     }).then(wasm => {
-      this.wasm = wasm;	// 初始化完成后，就能获取到 wasm 模块的对象了
+      this.wasm = wasm;	// 初始化完成后，就能获取到 wasm 模块的实例了
     })
   }
     
@@ -226,7 +231,8 @@ export class WasmPackService implements IPackService {
                 resultRects,
                 toEnumValue(m.SkylineBinPack_LevelChoiceHeuristic, setting['LevelChoiceHeuristic'])
               );
-              // 重要：手动释放 skyline 对象。因为 wasm 需要我们手动管理内存，所以创建了对象后一定要回收，不存在自动垃圾回收。
+              // 重要：手动释放 skyline 对象。因为 wasm 需要我们手动管理内存，
+	      // 所以创建了对象后一定要回收，不存在自动垃圾回收。
               skyline.delete();
               break;
       }
@@ -246,19 +252,25 @@ export class WasmPackService implements IPackService {
 
 #### 4.6.1 内存管理
 
-​	在使用 Wasm 中和 JS 差别最大的一点就是对象的内存都是手动创建（ new 函数 ）和释放的（ delete 函数 ）。请注意 new 和 delete 的成对使用。 vector 内如果存的不是指针，则会自动调用析构函数。
+  在使用 Wasm 中和 JS 差别最大的一点就是对象的内存都是手动创建（ new 函数 ）和释放的（ delete 函数 ）。请注意 new 和 delete 的成对使用。 vector 内如果存的不是指针，则会自动调用析构函数。
 
 #### 4.6.2 指定 Wasm 文件的 Url
 
-​	如果不指定 wasm 文件的 Url，那么 warp 文件会从网站根目录/xx.wasm 来加载，通常我们是不希望这样的，所以我们需要在 wasm 加载时通过 `locateFile`函数指定 wasm 文件的 Url。记住不要通过 webpack 或者 vite 的 loader 来加载 wasm，那样会自动转换成 wasm 模块，我们只需要获取 wasm 文件的 url 就行，在vite 中实在资源名后加上 `?url` ，webpack 中是加上 `!file-loader`。
+  如果不指定 wasm 文件的 Url，那么 warp 文件会从网站根目录 `/xx.wasm` 来加载，通常我们是不希望这样的，所以我们需要在 wasm 加载时通过 `locateFile`函数指定 wasm 文件的 Url。记住不要通过 webpack 或者 vite 的 loader 来加载 wasm，那样会自动转换成 wasm 模块，我们只需要获取 wasm 文件的 url 就行，在vite 中实在资源名后加上 `?url` ，webpack 中是加上 `!file-loader`。
 
 
 
 ## 5.总结
 
-​	这次尝试涉及到的东西还是挺多的，有C++、编译器、WebAssembly 、loader。整体做下来踩得坑也挺多的，主要是这方面的资料比较少，很多要么很简单就是导出一个全局函数，要么就是很复杂的一个完整项目如 ffmpeg 的 wasm 版本。之前一直想学习 WebAssembly，这次总算有次机会了比较简单的了解了从编译到使用的全过程。
+  这次尝试涉及到的东西还是挺多的，有C++、编译器、WebAssembly 、loader。整体做下来踩得坑也挺多的，主要是这方面的资料比较少，很多要么很简单就是导出一个全局函数，要么就是很复杂的一个完整项目如 ffmpeg 的 wasm 版本。之前一直想学习 WebAssembly，这次总算有次机会了比较简单的了解了从编译到使用的全过程。
 
-​	最后做出来的效果还比较满意，也有一定的实际运用价值，当然主要是小学妹也很满意。
+  最后做出来的效果还比较满意，也有一定的实际运用价值，当然主要是小学妹也很满意。
+  
+  觉得可以改进的地方是:
+  
+> * 现在手动写 warp 文件还是比较麻烦，都是重复的体力劳动，能不能写一个工具通过分析 C++ 代码，来自动生成 warp 文件和 Typescript 定义，这样可以节省很多工作量，可以参考 swig 的做法。
+> * 内存管理的部分，我见到过通过用 Scope 来实现半自动内存管理的，应该也可以加进来使用。
+  
 
 ## 6.彩蛋 ：C# 的做法
 
@@ -298,11 +310,11 @@ swig -c++ -csharp Warp.idl
 
 ### 6.2 编译 Dll
 
-​	比较幸运的是，RectangleBinPack 自带了 VisualStudio 的工程文件  RectangleBinPack.sln ，打开后将上面生成的 warp.cxx 文件加入工程就行，然后 build 一个 x64 的版本。
+  比较幸运的是，RectangleBinPack 自带了 VisualStudio 的工程文件  RectangleBinPack.sln ，打开后将上面生成的 warp.cxx 文件加入工程就行，然后 build 一个 x64 的版本。
 
 ### 6.3 使用
-
-​	创建一个C# GUI项目，将 6.1 生成的的 cs 文件和 6.2 生成的 dll 复制到目录下，dll 记得选择较新则复制。下面将比较重要的代码贴一下：
+  
+  创建一个C# GUI项目，将 6.1 生成的的 cs 文件和 6.2 生成的 dll 复制到目录下，dll 记得选择较新则复制。下面将比较重要的代码贴一下：
 
 ```csharp
   public (double, List<Rect>) PackImplement(PackRequestDto dto)
